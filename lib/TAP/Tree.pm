@@ -259,4 +259,19 @@ __END__
 
 TAP::Tree - Simple TAP (Test Anything Protocol) parser
 
+=head1 SYNOPSIS
+
+  use v5.10.1;
+  require TAP::Tree;
+  my $tap = <<'END';
+  ok 1 - test 1
+  ok 2 - test 2
+  1..2
+  END
+
+  my $tap = TAP::Tree->parse( tap_ref => \$tap );
+  say $tap->{plan}{number};   # print 2
+  say $tap->{testline}[0]{description}; # print test 1
+  say $tap->{testline}[1]{description}; # print test 2
+
 =cut
