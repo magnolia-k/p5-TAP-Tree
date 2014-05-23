@@ -8,39 +8,178 @@ our $VERSION = 'v0.0.1';
 
 use Carp;
 use autodie;
+use Encode qw[decode];
 
-sub parse {
-    my $pkg    = shift;
+sub new {
+    my $class  = shift;
     my %params = @_;
 
-    unless ( $params{tap_ref} && ref( $params{tap_ref} ) eq 'SCALAR' ) {
-        croak "Parameter 'tap_ref' must be scalar reference.";
-    }
+    my $self = {
+        tap_file    => $params{tap_file},
+        tap_ref     => $params{tap_ref},
+        tap_tree    => $params{tap_tree},
 
-    open my $fh, '<', $params{tap_ref};
-    my $result = __PACKAGE__->_parse( $fh );
-    close $fh;
+        utf8        => $params{utf8},
 
-    return $result;
+        is_parsed   => undef,
+
+        result      => {
+            version     => undef,
+            plan        => undef,
+            testline    => [],
+            bailout     => undef,
+        },
+    };
+
+    bless $self, $class;
+
+    $self->_validate;
+    $self->_initialize;
+
+    return $self;
 }
 
-sub parse_from_file {
-    my $pkg    = shift;
-    my %params = @_;
+sub is_utf8     { return $_[0]->{utf8}      }
+sub is_parsed   { return $_[0]->{is_parsed} }
 
-    unless ( $params{tap_file} && -e -f -r -T $params{tap_file} ) {
-        croak "Invalid file:$params{tap_file}";
+sub _check_for_parsed { croak "TAP is not parsed" unless $_[0]->is_parsed }
+
+sub summary {
+    my $self = shift;
+
+    $self->_check_for_parsed;
+
+    my $fail = 0;
+    for my $testline ( @{ $self->{result}{testline} } ) {
+        $fail++ if ( $testline->{result} == 0 && ! $testline->{todo} );
     }
 
-    open my $fh, '<', $params{tap_file};
-    my $result = __PACKAGE__->_parse( $fh );
+    my $summary = {
+        bailout     => $self->{resukt}{bailout},
+        number      => $self->{result}{plan},
+        fail        => $fail,
+    };
+
+    return $summary;
+}
+
+sub tap_version {
+    my $self = shift;
+    
+    $self->_check_for_parsed;
+    
+    return $self->{result}{version}{number};
+}
+
+sub is_bailout {
+    my $self = shift;
+
+    $self->_check_for_parsed;
+
+    return unless $self->{result}{bailout};
+
+    return $self->{result}{bailout}{message};
+}
+
+sub tap_tree {
+    my $self = shift;
+
+    $self->_check_for_parsed;
+
+    return $self->{result};
+}
+
+sub create_tap_tree_iterator {
+    my $self   = shift;
+    my %params = @_;
+
+    require TAP::Tree::Iterator;
+    my $iterator = TAP::Tree::Iterator->new( tap_tree => $self->tap_tree, %params );
+
+    return $iterator;
+}
+
+sub _validate {
+    my $self = shift;
+
+    if ( $self->{tap_ref} ) {
+        if ( $self->{tap_file} or $self->{tap_tree} ) {
+            croak "Excessive parameter";
+        }
+
+        if ( ref( $self->{tap_ref} ) ne 'SCALAR' ) {
+            croak "Parameter 'tap_ref' is not scalar reference";
+        }
+
+        return $self;
+    }
+
+    if ( $self->{tap_file} ) {
+        if ( $self->{tap_ref} or $self->{tap_tree} ) {
+            croak "Excessive parameter";
+        }
+
+        if ( ! -e -f -r -T $self->{tap_file} ) {
+            croak "Paramter 'tap_file' is invalid:$self->{tap_file}";
+        }
+
+        return $self;
+    }
+
+    if ( $self->{tap_tree} ) {
+        if ( $self->{tap_file} or $self->{tap_ref} ) {
+            croak "Excessive parameter";
+        }
+
+        if ( ref( $self->{tap_tree} ) ne 'HASH' ) {
+            croak "Parameter 'tap_tree' is not hash reference";
+        }
+
+        my @keys = qw[version plan testline bailout];
+        for my $key ( @keys ) {
+            if ( defined ( ! ${ $self->{tap_tree} }{$key} ) ) {
+                croak "Parameter 'tap_tree' is invalid tap tree";
+            }
+        }
+
+        return $self;
+    }
+
+    croak "No required parameter ( tap_ref or tap_file ot tap_tree )";
+}
+
+sub _initialize {
+    my $self = shift;
+
+    if ( $self->{tap_tree} ) {
+        $self->{result} = $self->{tap_tree};    # Not deep copy.
+        $self->{is_parsed}++;
+
+        return $self;
+    }
+
+}
+
+sub parse {
+    my $self   = shift;
+
+    if ( $self->{is_parsed} ) {
+        croak "TAP is already parsed.";
+    }
+
+    my $path = ( $self->{tap_file} ) ? $self->{tap_file} : $self->{tap_ref};
+
+    open my $fh, '<', $path;
+    $self->{result} = $self->_parse( $fh );
     close $fh;
 
-    return $fh;
+    $self->{is_parsed}++;
+
+    return $self->{result};
 }
 
 sub _parse {
-    my ( $pkg, $fh ) = @_;
+    my ( $self, $fh ) = @_;
 
     my $result = {
         version     => undef,
@@ -50,7 +189,10 @@ sub _parse {
     };
 
     my @subtest_lines;
-    while ( my $line = <$fh> ) {
+    while ( my $line_raw = <$fh> ) {
+
+        my $line = ( $self->{utf8} ) ? encode( 'UTF-8', $line_raw ) : $line_raw;
+
         chomp $line;
 
         next if ( $line =~ /!\s*#/ );   # skip all comments.
@@ -90,7 +232,7 @@ sub _parse {
                     croak "Invalid TAP sequence. TAP plan is already specified.";
                 }
 
-                $result->{plan} = __PACKAGE__->_parse_plan( $line );
+                $result->{plan} = $self->_parse_plan( $line );
             }
 
             next;
@@ -102,9 +244,9 @@ sub _parse {
             if ( $1 ) {
                 push @subtest_lines, $line;
             } else {
-                my $subtests = __PACKAGE__->_parse_subtest( \@subtest_lines );
+                my $subtest = $self->_parse_subtest( \@subtest_lines );
                 push @{ $result->{testline} },
-                     __PACKAGE__->_parse_testline( $line, $subtests );
+                     $self->_parse_testline( $line, $subtest );
             }
 
             next;
@@ -120,7 +262,7 @@ sub _parse {
 }
 
 sub _parse_plan {
-    my $pkg  = shift;
+    my $self = shift;
     my $line = shift;
 
     my $plan = {
@@ -148,9 +290,9 @@ sub _parse_plan {
 }
 
 sub _parse_testline {
-    my $pkg      = shift;
-    my $line     = shift;
-    my $subtests = shift;
+    my $self    = shift;
+    my $line    = shift;
+    my $subtest = shift;
 
     my $testline = {
         str         => $line,
@@ -160,7 +302,7 @@ sub _parse_testline {
         directive   => undef,
         todo        => undef,       # is todo test?
         skip        => undef,       # is skipped?
-        subtests    => $subtests,   # array reference of TAP
+        subtest     => $subtest,
     };
 
     if ( $line =~ /(not )?ok\s*(\d+)?(.*)?/ ) {
@@ -192,13 +334,13 @@ sub _parse_testline {
 }
 
 sub _parse_subtest {
-    my $pkg         = shift;
+    my $self        = shift;
     my $subtest_ref = shift;
 
     return unless $subtest_ref;
     return unless @{ $subtest_ref };
 
-    my $str = pop @{ $subtest_ref };
+    my $str = shift @{ $subtest_ref };
 
     my ( $indent, $line );
     {
@@ -210,14 +352,14 @@ sub _parse_subtest {
     my $subtest_result = {
         plan        => undef,
         testline    => [],
-        subtests    => undef,
+        subtest     => undef,
     };
 
-    __PACKAGE__->_parse_subtest_line( $line, $subtest_result );
+    $self->_parse_subtest_line( $line, $subtest_result );
 
     my @subtest_more;
     while( @{ $subtest_ref } ) {
-        my $subtest_line = pop @{ $subtest_ref };
+        my $subtest_line = shift @{ $subtest_ref };
 
         my ( $sub_indent, $sub_line );
         {
@@ -231,21 +373,21 @@ sub _parse_subtest {
             next;
         }
 
-        __PACKAGE__->_parse_subtest_line( $sub_line, $subtest_result, \@subtest_more );
+        $self->_parse_subtest_line( $sub_line, $subtest_result, \@subtest_more );
     }
 
     return $subtest_result;
 }
 
 sub _parse_subtest_line {
-    my ( $pkg, $line, $subtest_result, $subtest_more_ref ) = @_;
+    my ( $self, $line, $subtest_result, $subtest_more_ref ) = @_;
 
     if ( $line =~ /^1\.\.\d+/ ) {
-        $subtest_result->{plan} = __PACKAGE__->_parse_plan( $line );
+        $subtest_result->{plan} = $self->_parse_plan( $line );
     } elsif ( $line =~ /^(not )?ok/ ) {
-        my $subtests = __PACKAGE__->_parse_subtest( $subtest_more_ref );
+        my $subtest = $self->_parse_subtest( $subtest_more_ref );
         push @{ $subtest_result->{testline} },
-             __PACKAGE__->_parse_testline( $line, $subtests );
+             $self->_parse_testline( $line, $subtest );
     }
 }
 
@@ -269,9 +411,10 @@ TAP::Tree - Simple TAP (Test Anything Protocol) parser
   1..2
   END
 
-  my $tap = TAP::Tree->parse( tap_ref => \$tap );
-  say $tap->{plan}{number};   # print 2
-  say $tap->{testline}[0]{description}; # print test 1
-  say $tap->{testline}[1]{description}; # print test 2
+  my $tap  = TAP::Tree->new( tap_ref => \$tap );
+  my $tree = $tap->parse;
+  say $tree->{plan}{number};   # print 2
+  say $tree->{testline}[0]{description}; # print test 1
+  say $tree->{testline}[1]{description}; # print test 2
 
 =cut

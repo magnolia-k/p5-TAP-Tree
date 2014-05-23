@@ -12,10 +12,10 @@ use Test::More tests => 16;
 require_ok( 'TAP::Tree' );
 
 subtest '01-success.t' => sub {
-    my $result = execute_test_script( '01-success.t' );
+    my $tree = execute_test_script( '01-success.t' );
 
-    my $plan = $result->{plan};
-    my $testlines = $result->{testline};
+    my $plan      = $tree->{plan};
+    my $testlines = $tree->{testline};
 
     plan tests => 5;
 
@@ -28,9 +28,10 @@ subtest '01-success.t' => sub {
 };
 
 subtest '02-failure.t' => sub {
-    my $result = execute_test_script( '02-failure.t' );
-    my $plan = $result->{plan};
-    my $testlines = $result->{testline};
+    my $tree = execute_test_script( '02-failure.t' );
+
+    my $plan      = $tree->{plan};
+    my $testlines = $tree->{testline};
 
     plan tests => 3;
 
@@ -41,9 +42,9 @@ subtest '02-failure.t' => sub {
 };
 
 subtest '03-skip.t' => sub {
-    my $result = execute_test_script( '03-skip.t' );
-    my $plan = $result->{plan};
-    my $testlines = $result->{testline};
+    my $tree = execute_test_script( '03-skip.t' );
+    my $plan      = $tree->{plan};
+    my $testlines = $tree->{testline};
 
     plan tests => 5;
 
@@ -56,9 +57,10 @@ subtest '03-skip.t' => sub {
 };
 
 subtest '04-todo.t' => sub {
-    my $result = execute_test_script( '04-todo.t' );
-    my $plan = $result->{plan};
-    my $testlines = $result->{testline};
+    my $tree = execute_test_script( '04-todo.t' );
+
+    my $plan      = $tree->{plan};
+    my $testlines = $tree->{testline};
 
     plan tests => 5;
 
@@ -71,9 +73,10 @@ subtest '04-todo.t' => sub {
 };
 
 subtest '05-bailout.t' => sub {
-    my $result = execute_test_script( '05-bailout.t' );
-    my $plan = $result->{plan};
-    my $testlines = $result->{testline};
+    my $tree = execute_test_script( '05-bailout.t' );
+
+    my $plan      = $tree->{plan};
+    my $testlines = $tree->{testline};
 
     plan tests => 3;
 
@@ -84,9 +87,10 @@ subtest '05-bailout.t' => sub {
 };
 
 subtest '06-die.t' => sub {
-    my $result = execute_test_script( '06-die.t' );
-    my $plan = $result->{plan};
-    my $testlines = $result->{testline};
+    my $tree = execute_test_script( '06-die.t' );
+
+    my $plan      = $tree->{plan};
+    my $testlines = $tree->{testline};
 
     plan tests => 3;
 
@@ -97,9 +101,10 @@ subtest '06-die.t' => sub {
 };
 
 subtest '07-donetesting.t' => sub {
-    my $result = execute_test_script( '07-donetesting.t' );
-    my $plan = $result->{plan};
-    my $testlines = $result->{testline};
+    my $tree = execute_test_script( '07-donetesting.t' );
+
+    my $plan      = $tree->{plan};
+    my $testlines = $tree->{testline};
 
     plan tests => 1;
 
@@ -107,9 +112,10 @@ subtest '07-donetesting.t' => sub {
 };
 
 subtest '08-subtest.t' => sub {
-    my $result = execute_test_script( '08-subtest.t' );
-    my $plan = $result->{plan};
-    my $testlines = $result->{testline};
+    my $tree = execute_test_script( '08-subtest.t' );
+
+    my $plan      = $tree->{plan};
+    my $testlines = $tree->{testline};
 
     plan tests => 2;
 
@@ -118,9 +124,10 @@ subtest '08-subtest.t' => sub {
 };
 
 subtest '09-unmatch.t' => sub {
-    my $result = execute_test_script( '09-unmatch.t' );
-    my $plan = $result->{plan};
-    my $testlines = $result->{testline};
+    my $tree = execute_test_script( '09-unmatch.t' );
+
+    my $plan      = $tree->{plan};
+    my $testlines = $tree->{testline};
 
     plan tests => 2;
 
@@ -129,9 +136,10 @@ subtest '09-unmatch.t' => sub {
 };
 
 subtest '10-todo_skip.t' => sub {
-    my $result = execute_test_script( '10-todo_skip.t' );
-    my $plan = $result->{plan};
-    my $testlines = $result->{testline};
+    my $tree = execute_test_script( '10-todo_skip.t' );
+
+    my $plan      = $tree->{plan};
+    my $testlines = $tree->{testline};
 
     plan tests => 3;
 
@@ -141,9 +149,10 @@ subtest '10-todo_skip.t' => sub {
 };
 
 subtest '11-fail_subtest.t' => sub {
-    my $result = execute_test_script( '11-fail_subtest.t' );
-    my $plan = $result->{plan};
-    my $testlines = $result->{testline};
+    my $tree = execute_test_script( '11-fail_subtest.t' );
+
+    my $plan      = $tree->{plan};
+    my $testlines = $tree->{testline};
 
     plan tests => 3;
 
@@ -153,9 +162,10 @@ subtest '11-fail_subtest.t' => sub {
 };
 
 subtest '12-todo_subtest.t' => sub {
-    my $result = execute_test_script( '12-todo_subtest.t' );
-    my $plan = $result->{plan};
-    my $testlines = $result->{testline};
+    my $tree = execute_test_script( '12-todo_subtest.t' );
+
+    my $plan      = $tree->{plan};
+    my $testlines = $tree->{testline};
 
     plan tests => 3;
 
@@ -165,9 +175,10 @@ subtest '12-todo_subtest.t' => sub {
 };
 
 subtest '13-bailout_subtest_donetesting.t' => sub {
-    my $result = execute_test_script( '13-bailout_subtest_donetesting.t' );
-    my $plan = $result->{plan};
-    my $testlines = $result->{testline};
+    my $tree = execute_test_script( '13-bailout_subtest_donetesting.t' );
+
+    my $plan      = $tree->{plan};
+    my $testlines = $tree->{testline};
 
     plan tests => 2;
 
@@ -176,9 +187,10 @@ subtest '13-bailout_subtest_donetesting.t' => sub {
 };
 
 subtest '14-skipall.t' => sub {
-    my $result = execute_test_script( '14-skipall.t' );
-    my $plan = $result->{plan};
-    my $testlines = $result->{testline};
+    my $tree = execute_test_script( '14-skipall.t' );
+
+    my $plan      = $tree->{plan};
+    my $testlines = $tree->{testline};
 
     plan tests => 1;
 
@@ -186,9 +198,10 @@ subtest '14-skipall.t' => sub {
 };
 
 subtest '15-skipall_aftertest.t' => sub {
-    my $result = execute_test_script( '15-skipall_aftertest.t' );
-    my $plan = $result->{plan};
-    my $testlines = $result->{testline};
+    my $tree = execute_test_script( '15-skipall_aftertest.t' );
+
+    my $plan      = $tree->{plan};
+    my $testlines = $tree->{testline};
 
     plan tests => 2;
 
@@ -205,7 +218,7 @@ sub execute_test_script {
     }
 
     my $tap_output = `$^X $path 2>&1`;
-    my $result = TAP::Tree->parse( tap_ref => \$tap_output );
+    my $tree = TAP::Tree->new( tap_ref => \$tap_output )->parse;
 
-    return $result;
+    return $tree;
 }
