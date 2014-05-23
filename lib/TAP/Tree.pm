@@ -42,7 +42,7 @@ sub new {
 sub is_utf8     { return $_[0]->{utf8}      }
 sub is_parsed   { return $_[0]->{is_parsed} }
 
-sub _check_for_parsed { croak "TAP is not parsed" unless $_[0]->is_parsed }
+sub _check_for_parsed { croak "not parsed" unless $_[0]->is_parsed }
 
 sub summary {
     my $self = shift;
@@ -55,30 +55,13 @@ sub summary {
     }
 
     my $summary = {
-        bailout     => $self->{resukt}{bailout},
-        number      => $self->{result}{plan},
+        version     => $self->{result}{version},
+        bailout     => $self->{result}{bailout},
+        plan        => $self->{result}{plan},
         fail        => $fail,
     };
 
     return $summary;
-}
-
-sub tap_version {
-    my $self = shift;
-    
-    $self->_check_for_parsed;
-    
-    return $self->{result}{version}{number};
-}
-
-sub is_bailout {
-    my $self = shift;
-
-    $self->_check_for_parsed;
-
-    return unless $self->{result}{bailout};
-
-    return $self->{result}{bailout}{message};
 }
 
 sub tap_tree {
@@ -135,10 +118,10 @@ sub _validate {
             croak "Parameter 'tap_tree' is not hash reference";
         }
 
-        my @keys = qw[version plan testline bailout];
+        my @keys = qw[version plan testline];
         for my $key ( @keys ) {
-            if ( defined ( ! ${ $self->{tap_tree} }{$key} ) ) {
-                croak "Parameter 'tap_tree' is invalid tap tree";
+            if ( ! defined $self->{tap_tree}{$key} ) {
+                croak "Parameter 'tap_tree' is invalid tap tree:$key";
             }
         }
 
@@ -225,11 +208,11 @@ sub _parse {
         # plan
         if ( $line =~ /^(\s*)1\.\.\d+(\s#.*)?$/ ) {
 
-            if ( $1 ) {
+            if ( $1 ) { # subtest
                 push @subtest_lines, $line;
             } else {
                 if ( $result->{plan}{number} ) {
-                    croak "Invalid TAP sequence. TAP plan is already specified.";
+                    croak "Invalid TAP sequence. Plan is already specified.";
                 }
 
                 $result->{plan} = $self->_parse_plan( $line );
@@ -241,7 +224,7 @@ sub _parse {
         # testline
         if ( $line =~ /^(\s*)(not )?ok/ ) {
 
-            if ( $1 ) {
+            if ( $1 ) { # subtest
                 push @subtest_lines, $line;
             } else {
                 my $subtest = $self->_parse_subtest( \@subtest_lines );
@@ -272,7 +255,8 @@ sub _parse_plan {
         directive   => undef,
     };
 
-    if ( $line =~ /^1\.\.(\d+)\s*(# .*)?/ ) {
+    {
+        $line =~ /^1\.\.(\d+)\s*(# .*)?/;
 
         $plan->{number} = $1;
         $plan->{skip_all}++ if ( $plan->{number} == 0 );
@@ -281,9 +265,6 @@ sub _parse_plan {
             $plan->{directive} = $2;
             $plan->{directive} =~ s/^\s#\s+//;
         }
-
-    } else {
-        croak "Can't parse plan:$line";
     }
 
     return $plan;
@@ -305,7 +286,8 @@ sub _parse_testline {
         subtest     => $subtest,
     };
 
-    if ( $line =~ /(not )?ok\s*(\d+)?(.*)?/ ) {
+    {
+        $line =~ /(not )?ok\s*(\d+)?(.*)?/;
 
         $testline->{result} = $1 ? 0 : 1;
         $testline->{test_number} = $2 if $2;    # test number is optional
@@ -325,9 +307,6 @@ sub _parse_testline {
                 $testline->{skip}++ if ( $testline->{directive} =~ /skip/i );
             }
         }
-
-    } else {
-        croak "Can't parse testline:$line";
     }
 
     return $testline;
