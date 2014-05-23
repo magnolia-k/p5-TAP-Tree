@@ -91,7 +91,6 @@ sub _next_subtest {
         }
 
         if ( defined $nexttest->{testline}[$index_next + 1] ) {
-            print "aaaaaaaaaaaaaaaaaaaaaa:$index_next\n";
             $found = $index_next + 1;
             last;
         }
