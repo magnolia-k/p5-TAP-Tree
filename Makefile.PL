@@ -20,4 +20,24 @@ WriteMakefile(
     BUILD_REQUIRES => {
         'ExtUtils::MakeMaker' => 6.66,
     },
+
+    META_MERGE      => {
+        "meta-spec" => { version => 2 },
+
+        "resources" => {
+            "homepage" => "https://github.com/magnolia-k/p5-TAP-Tree",
+
+            "bugtracker" => {
+                "web" => "https://github.com/magnolia-k/p5-TAP-Tree/issues",
+            },
+
+            "repository" => {
+                "type" => "git",
+                "url"  => "https://github.com/magnolia-k/p5-TAP-Tree.git",
+                "web"  => "https://github.com/magnolia-k/p5-TAP-Tree",
+            },
+        },
+    },
+
+
     );
