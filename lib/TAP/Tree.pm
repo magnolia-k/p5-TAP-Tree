@@ -191,7 +191,7 @@ sub _parse {
     my @subtest_lines;
     while ( my $line_raw = <$fh> ) {
 
-        my $line = ( $self->{utf8} ) ? encode( 'UTF-8', $line_raw ) : $line_raw;
+        my $line = ( $self->{utf8} ) ? decode( 'UTF-8', $line_raw ) : $line_raw;
 
         chomp $line;
 
