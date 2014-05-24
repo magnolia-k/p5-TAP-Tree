@@ -42,7 +42,7 @@ subtest 'bailout' => sub {
     my $tap = <<'END';
 1..2
 ok 1 - first test
-Bail Out!  stop test!
+Bail out!  stop test!
 END
 
     my $taptree = TAP::Tree->new( tap_ref => \$tap );
