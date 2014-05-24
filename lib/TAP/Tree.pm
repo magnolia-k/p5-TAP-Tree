@@ -378,22 +378,83 @@ __END__
 
 =head1 NAME
 
-TAP::Tree - Simple TAP (Test Anything Protocol) parser
+TAP::Tree - TAP (Test Anything Protocol) parser which supported the subtest
 
 =head1 SYNOPSIS
 
   use v5.10.1;
   require TAP::Tree;
   my $tap = <<'END';
+  1..2
+      ok 1 - sub test 1
+      1..1
   ok 1 - test 1
   ok 2 - test 2
-  1..2
   END
 
-  my $tap  = TAP::Tree->new( tap_ref => \$tap );
-  my $tree = $tap->parse;
-  say $tree->{plan}{number};   # print 2
-  say $tree->{testline}[0]{description}; # print test 1
-  say $tree->{testline}[1]{description}; # print test 2
+  my $taptree = TAP::Tree->new( tap_ref => \$tap );
+  my $tree = $taptree->parse;
+
+  say $tree->{plan}{number};             # -> print 2
+  say $tree->{testline}[0]{description}; # -> print test 1
+  say $tree->{testline}[1]{description}; # -> print test 2
+
+  say $tree->{testline}[0]{subtest}{testline}[0]{description};
+  # -> print sub test 1
+
+  # iterator
+  my $iterator = $taptree->create_tap_tree_iterator( subtest => 1 );
+  
+  while ( my $result = $iterator->next ) {
+      say $result->{testline}{description};
+  }
+
+  # -> print
+  #   test 1
+  #   sub test 1
+  #   test 2
+
+=head1 DESCRIPTION
+
+TAP::Tree is a simple parser of TAP which supported the subtest. 
+
+It parse the data of a TAP format to the data of tree architecture.
+Moreover, the iterator for complicated layered structure is also prepared.
+
+=head1 METHODS
+
+=over 2
+
+=item new
+
+  my $taptree = TAP::Tree->new( tap_ref => \$tap_ref );
+
+Returns a new C<TAP::Tree> object.
+
+  my $taptree = TAP::Tree->new( tap_file => $path );
+  my $taptree = TAP::Tree->new( tap_tree => $parsed_ref );
+
+=item parse
+
+=item create_tap_tree_iterator
+
+=item tap_tree
+
+=item summary
+
+=back
+
+=head1 ISSUE REPORT
+
+L<https://github.com/magnolia-k/p5-TAP-Tree/issues>
+
+=head1 COPYRIGHT
+
+copyright 2014- Magnolia C<< <magnolia.k@me.com> >>.
+
+=head1 LICENSE
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
