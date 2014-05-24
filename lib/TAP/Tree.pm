@@ -427,20 +427,59 @@ Moreover, the iterator for complicated layered structure is also prepared.
 
 =item new
 
-  my $taptree = TAP::Tree->new( tap_ref => \$tap_ref );
+  require TAP::Tree;
+  my $taptree = TAP::Tree->new( tap_ref => $tap_ref );
 
-Returns a new C<TAP::Tree> object.
+Creates the instance of C<TAP::Tree>.
+
+Specify the reference to the scalar variable which stored the outputs of TAP as tap_ref of an arguments. 
+
+The arguments can be specified C<tap_file> and C<tap_tree> in addition to C<tap_ref>.
+
+C<tap_file> is specified the path to file which stored the outputs of TAP.
 
   my $taptree = TAP::Tree->new( tap_file => $path );
-  my $taptree = TAP::Tree->new( tap_tree => $parsed_ref );
+
+C<tap_tree> is specified the data of the tree structure which C<TAP::Tree> parsed.
+
+  my $taptree = TAP::Tree->new( tap_tree => $parsed_tap );
+
+C<utf8> is specified, when TAP is encoded by UTF-8. 
+
+  my $taptree = TAP::Tree->new( tap_ref => $tap_ref, utf8 => 1 );
 
 =item parse
 
-=item create_tap_tree_iterator
+  require TAP::Tree;
+  my $taptree = TAP::Tree->new( tap_ref => $tap_ref );
+  my $tree    = $taptree->parse;
 
-=item tap_tree
+  say $tree->{plan}{number};
+  say $tree->{testline}[0]->{description};
 
-=item summary
+Parses TAP and returns a tree structure data. The return value is a hash Reference and all of the parsed result of TAP are stored.
+
+Please dump the detailed content of inclusion :)
+
+  {
+      version   => {},  # the version number of TAP (usually 12). 
+      plan      => {},  # the hash reference in which the numbers of tests.
+      testline  => [],  # the array reference in which the result of each tests.
+      bailout   => {},  # the hash reference in which an informational about Bailout.
+  }
+
+C<TAP::Tree> makes becomes the complicated structure where a hierarchy is deep, when there is a subtest. 
+
+Therefore, the iterator which can follow a tree strucutre data easily is prepared for C<TAP::Tree>. 
+
+  my $taptree = TAP::Tree->new( tap_ref => $tap_ref );
+  $taptree->parse;
+  my $iterator = $taptree->create_tap_tree_iterator( subtest => 1);
+
+  my $test = $iterator->next;
+  say $test->{testline}{description};
+
+Specify arguments C<subtest>, when following subtest. 
 
 =back
 

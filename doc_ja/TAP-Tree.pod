@@ -1,0 +1,128 @@
+=pod
+
+=encoding utf8
+
+=head1 名前
+
+TAP::Tree - subtestをサポートするTAP (Test Anything Protocol )
+
+=head1 概要
+
+  use v5.10.1;
+  require TAP::Tree;
+  my $tap = <<'END';
+  1..2
+      ok 1 - sub test 1
+      1..1
+  ok 1 - test 1
+  ok 2 - test 2
+  END
+
+  my $taptree = TAP::Tree->new( tap_ref => \$tap );
+  my $tree = $taptree->parse;
+
+  say $tree->{plan}{number};             # -> print 2
+  say $tree->{testline}[0]{description}; # -> print test 1
+  say $tree->{testline}[1]{description}; # -> print test 2
+
+  say $tree->{testline}[0]{subtest}{testline}[0]{description};
+  # -> print sub test 1
+
+  # iterator
+  my $iterator = $taptree->create_tap_tree_iterator( subtest => 1 );
+
+  while ( my $result = $iterator->next ) {
+      say $result->{testline}{description};
+  }
+
+  # -> print
+  #   test 1
+  #   sub test 1
+  #   test 2
+
+=head1 説明
+
+C<TAP::Tree>は、subtestをサポートするシンプルなTAP ( Test Anything Protocol )のパーサーです。
+
+subtestを含むTAPの出力を分析し、tree構造のハッシュリファレンスを作成します。また、複雑なtree構造を検索するためのイテレータを提供します。
+
+=head1 メソッド
+
+=over 2
+
+=item new
+
+  require TAP::Tree;
+  my $taptree = TAP::Tree->new( tap_ref => $tap_ref );
+
+C<TAP::Tree>のインスタンスを作成します。
+
+引数のC<tap_ref>には、TAPの出力を格納したスカラー変数へのリファレンスを指定します。
+
+TAPを指定する引数には、C<tap_ref>以外にC<tap_file>か、C<tap_tree>を指定することができます。
+
+引数のC<tap_file>には、TAPの出力を格納したファイルへのパスを指定します。
+
+  my $taptree = TAP::Tree->new( tap_file => $path );
+
+引数のC<tap_tree>には、C<TAP::Tree>が解析したtree構造のデータを指定します。
+
+  my $taptree = TAP::Tree->new( tap_tree => $parsed_tap );
+
+TAPがUTF-8でエンコードされている場合は、C<utf8>引数を指定します。
+
+  my $taptree = TAP::Tree->new( tap_ref => $tap_ref, utf8 => 1 );
+
+=item parse
+
+  require TAP::Tree;
+  my $taptree = TAP::Tree->new( tap_ref => $tap_ref );
+  my $tree    = $taptree->parse;
+
+  say $tree->{plan}{number};
+  say $tree->{testline}[0]->{description};
+
+TAPを解析し、tree型のデータを返します。返値は、ハッシュリファレンスになっていて、TAPの解析結果が全て格納されています。
+
+詳しい収録内容は、ダンプしてみて下さい :)
+
+  {
+      version   => {},  # TAPのバージョンを収録する(通常は12固定)
+      plan      => {},  # テストの数を収録するハッシュリファレンス
+      testline  => [],  # 各テストの結果を収録する配列へのリファレンス
+      bailout   => {},  # Bail outした時の情報を収録するハッシュリファレンス
+  }
+
+=item create_tap_tree_iterator
+
+C<TAP::Tree>が作るtree型のデータは、サブテストが有る場合に階層が深い、複雑な構造になります。
+
+そのため、C<TAP::Tree>には、tree型のデータを簡単に辿ることが出来るイテレータが用意されています。
+
+  my $taptree = TAP::Tree->new( tap_ref => $tap_ref );
+  $taptree->parse;
+  my $iterator = $taptree->create_tap_tree_iterator( subtest => 1);
+
+  my $test = $iterator->next;
+  say $test->{testline}{description};
+
+subtestを辿っていく時は、引数C<subtest>を指定します。
+
+=back
+
+=head1 ウェブサイト
+
+L<https://github.com/magnolia-k/p5-TAP-Tree>
+
+=head1 問題の報告
+
+L<https://github.com/magnolia-k/p5-TAP-Tree/issues>
+
+=head1 コピーライト
+
+copyright 2014- Magnolia C<< <magnolia.k@me.com> >>.
+
+=head1 LICENSE
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
