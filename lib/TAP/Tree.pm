@@ -181,7 +181,7 @@ sub _parse {
         next if ( $line =~ /!\s*#/ );   # skip all comments.
 
         # Bail Out!
-        if ( $line =~ /^Bail Out!\s{2}(.*)/ ) {
+        if ( $line =~ /^Bail out!\s+(.*)/ ) {
             $result->{bailout} = {
                 str     => $line,
                 message => $1,
@@ -263,7 +263,7 @@ sub _parse_plan {
 
         if ( $2 ) {
             $plan->{directive} = $2;
-            $plan->{directive} =~ s/^\s#\s+//;
+            $plan->{directive} =~ s/^#\s+//;
         }
     }
 
