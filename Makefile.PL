@@ -21,6 +21,11 @@ WriteMakefile(
         'ExtUtils::MakeMaker' => 6.66,
     },
 
+    TEST_REQUIRES => {
+        'Test::More' => 0.98,
+        'Test::Exception' => 0,
+    },
+
     META_MERGE      => {
         "meta-spec" => { version => 2 },
 
