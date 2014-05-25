@@ -22,7 +22,7 @@ WriteMakefile(
     },
 
     TEST_REQUIRES => {
-        'Test::More' => 0.98,
+        'Test::More' => '1.001003',
         'Test::Exception' => 0,
     },
 
