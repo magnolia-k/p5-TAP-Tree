@@ -385,6 +385,8 @@ TAP::Tree - TAP (Test Anything Protocol) parser which supported the subtest
 
 =head1 SYNOPSIS
 
+Parses the TAP output.
+
   use v5.10.1;
   require TAP::Tree;
   my $tap = <<'END';
@@ -392,11 +394,11 @@ TAP::Tree - TAP (Test Anything Protocol) parser which supported the subtest
       ok 1 - sub test 1
       1..1
   ok 1 - test 1
-  ok 2 - test 2
+  not ok 2 - test 2
   END
 
   my $taptree = TAP::Tree->new( tap_ref => \$tap );
-  my $tree = $taptree->parse;
+  my $tree = $taptree->parse;   # return value is hash reference simply.
 
   say $tree->{plan}{number};             # -> print 2
   say $tree->{testline}[0]{description}; # -> print test 1
@@ -405,23 +407,30 @@ TAP::Tree - TAP (Test Anything Protocol) parser which supported the subtest
   say $tree->{testline}[0]{subtest}{testline}[0]{description};
   # -> print sub test 1
 
-  # iterator
+Summarises the parsed TAP output
+  my $summary = $taptree->summary;
+  say $summary->{plan}{number}; # -> print 2
+  say $summary->{fail};         # -> print 1 ... number of fail tests.
+                                # 'TODO' test is counted as 'ok', not 'not ok'
+
+Iterates the parsed TAP
+
   my $iterator = $taptree->create_tap_tree_iterator( subtest => 1 );
   
   while ( my $result = $iterator->next ) {
-      say $result->{testline}{description};
+      say '>' x $result->{indent} . $result->{testline}{description};
   }
 
   # -> print
   #   test 1
-  #   sub test 1
+  #   >sub test 1
   #   test 2
 
 =head1 DESCRIPTION
 
 TAP::Tree is a simple parser of TAP which supported the subtest. 
 
-It parse the data of a TAP format to the data of tree architecture.
+It parses the data of a TAP format to the data of tree structure.
 Moreover, the iterator for complicated layered structure is also prepared.
 
 =head1 METHODS
