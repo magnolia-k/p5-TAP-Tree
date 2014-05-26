@@ -25,8 +25,8 @@ WriteMakefile(
         'Test::Exception' => 0,
     },
 
-    PREREQ => {
-        'Test::More' => '1.001003',
+    PREREQ_PM => {
+        'Test::More' => '1.001002',
     },
 
     META_MERGE      => {

@@ -181,6 +181,9 @@ sub _parse {
         next if ( $line =~ /!\s*#/ );   # skip all comments.
 
         # Bail Out!
+        # NOTE
+        # 'Test-Simple < 0.98_01' can't handle BAIL_OUT in subtest correctly.
+        # Since TAP-Tree requires 'Test-Simple >= 1.001002'.
         if ( $line =~ /^Bail out!\s+(.*)/ ) {
             $result->{bailout} = {
                 str     => $line,
