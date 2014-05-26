@@ -37,9 +37,9 @@ subtest 'subtest' => sub {
 1..3
 ok 1 - first test
     ok 1 - first sub test
-        ok 1 - second sub test
+        ok 1 - sub sub test
         1..1
-    ok 2 - more sub test
+    ok 2 - second sub test
     1..2
 ok 2 - second test
 ok 3 - third test
@@ -51,21 +51,27 @@ END
 
     my $next1 = $iterator->next;
     is( $next1->{testline}{description}, 'first test', 'first test' );
+    is( $next1->{indent}, 0, 'indent - first test' );
 
     my $next2 = $iterator->next;
     is( $next2->{testline}{description}, 'second test', 'second test' );
+    is( $next2->{indent}, 0, 'indent - second test' );
 
     my $next3 = $iterator->next;
     is( $next3->{testline}{description}, 'first sub test', 'first sub test' );
+    is( $next3->{indent}, 1, 'indent - first sub test' );
 
     my $next4 = $iterator->next;
-    is( $next4->{testline}{description}, 'more sub test', 'more sub test' );
+    is( $next4->{testline}{description}, 'second sub test', 'second sub test' );
+    is( $next4->{indent}, 1, 'indent - second sub test' );
 
     my $next5 = $iterator->next;
-    is( $next5->{testline}{description}, 'second sub test', 'desc. - second sub test' );
+    is( $next5->{testline}{description}, 'sub sub test', 'desc. - sub sub test' );
+    is( $next5->{indent}, 2, 'indent - sub sub test' );
 
     my $next6 = $iterator->next;
     is( $next6->{testline}{description}, 'third test', 'desc. - third test' );
+    is( $next6->{indent}, 0, 'indent - third sub test' );
 
     my $next7 = $iterator->next;
     is( $next7, undef, 'finish iterate' );
