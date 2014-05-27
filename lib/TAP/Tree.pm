@@ -169,6 +169,7 @@ sub _parse {
         plan        => undef,
         testline    => [],
         bailout     => undef,
+        parse_error => [],
     };
 
     my @subtest_lines;
@@ -238,6 +239,8 @@ sub _parse {
             next;
         }
 
+        # 'unknown' line.
+        push @{ $self->{result}{parse_error} }, $line;
     }
 
     if ( ! $result->{version} ) {
