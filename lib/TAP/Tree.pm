@@ -389,7 +389,7 @@ TAP::Tree - TAP (Test Anything Protocol) parser which supported the subtest
 
 =head1 SYNOPSIS
 
-Parses the TAP output.
+Parses a TAP output.
 
   use v5.10.1;
   require TAP::Tree;
@@ -412,10 +412,11 @@ Parses the TAP output.
   # -> print sub test 1
 
 Summarises the parsed TAP output
+
   my $summary = $taptree->summary;
   say $summary->{plan}{number}; # -> print 2
   say $summary->{fail};         # -> print 1 ... number of fail tests.
-                                # 'TODO' test is counted as 'ok', not 'not ok'
+                                # 'TODO' tests are counted as 'ok', not 'not ok'
 
 Iterates the parsed TAP
 
@@ -435,13 +436,14 @@ Iterates the parsed TAP
 TAP::Tree is a simple parser of TAP which supported the subtest. 
 
 It parses the data of a TAP format to the data of tree structure.
-Moreover, the iterator for complicated layered structure is also prepared.
+
+Moreover, the iterator for complicated layered tree structure is also prepared.
 
 =head1 METHODS
 
 =over 2
 
-=item new
+=item * new
 
   require TAP::Tree;
   my $taptree = TAP::Tree->new( tap_ref => $tap_ref );
@@ -464,7 +466,7 @@ C<utf8> is specified, when TAP is encoded by UTF-8.
 
   my $taptree = TAP::Tree->new( tap_ref => $tap_ref, utf8 => 1 );
 
-=item parse
+=item * parse
 
   require TAP::Tree;
   my $taptree = TAP::Tree->new( tap_ref => $tap_ref );
@@ -473,7 +475,7 @@ C<utf8> is specified, when TAP is encoded by UTF-8.
   say $tree->{plan}{number};
   say $tree->{testline}[0]->{description};
 
-Parses TAP and returns a tree structure data. The return value is a hash Reference and all of the parsed result of TAP are stored.
+Parses a output of TAP and returns the tree structure data. The return value is a hash reference and all of the parsed result of TAP are stored.
 
 Please dump the detailed content of inclusion :)
 
@@ -483,6 +485,8 @@ Please dump the detailed content of inclusion :)
       testline  => [],  # the array reference in which the result of each tests.
       bailout   => {},  # the hash reference in which an informational about Bailout.
   }
+
+=item * create_tap_tree_iterator
 
 C<TAP::Tree> makes becomes the complicated structure where a hierarchy is deep, when there is a subtest. 
 

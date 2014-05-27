@@ -126,3 +126,17 @@ sub _next {
 }
 
 1;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+TAP::Tree::Iterator - The iterator of the TAP::Tree
+
+=head1 DESCRIPTION
+
+See L<TAP::Tree>.
+
+=cut

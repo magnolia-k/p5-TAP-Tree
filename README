@@ -3,6 +3,8 @@ NAME
     subtest
 
 SYNOPSIS
+    Parses a TAP output.
+
       use v5.10.1;
       require TAP::Tree;
       my $tap = <<'END';
@@ -10,11 +12,11 @@ SYNOPSIS
           ok 1 - sub test 1
           1..1
       ok 1 - test 1
-      ok 2 - test 2
+      not ok 2 - test 2
       END
 
       my $taptree = TAP::Tree->new( tap_ref => \$tap );
-      my $tree = $taptree->parse;
+      my $tree = $taptree->parse;   # return value is hash reference simply.
 
       say $tree->{plan}{number};             # -> print 2
       say $tree->{testline}[0]{description}; # -> print test 1
@@ -23,38 +25,100 @@ SYNOPSIS
       say $tree->{testline}[0]{subtest}{testline}[0]{description};
       # -> print sub test 1
 
-      # iterator
+    Summarises the parsed TAP output
+
+      my $summary = $taptree->summary;
+      say $summary->{plan}{number}; # -> print 2
+      say $summary->{fail};         # -> print 1 ... number of fail tests.
+                                    # 'TODO' tests are counted as 'ok', not 'not ok'
+
+    Iterates the parsed TAP
+
       my $iterator = $taptree->create_tap_tree_iterator( subtest => 1 );
   
       while ( my $result = $iterator->next ) {
-          say $result->{testline}{description};
+          say '>' x $result->{indent} . $result->{testline}{description};
       }
 
       # -> print
       #   test 1
-      #   sub test 1
+      #   >sub test 1
       #   test 2
 
 DESCRIPTION
     TAP::Tree is a simple parser of TAP which supported the subtest.
 
-    It parse the data of a TAP format to the data of tree architecture.
-    Moreover, the iterator for complicated layered structure is also
+    It parses the data of a TAP format to the data of tree structure.
+
+    Moreover, the iterator for complicated layered tree structure is also
     prepared.
 
 METHODS
-    new
-        my $taptree = TAP::Tree->new( tap_ref => \$tap_ref );
+    * new
 
-      Returns a new "TAP::Tree" object.
+        require TAP::Tree;
+        my $taptree = TAP::Tree->new( tap_ref => $tap_ref );
+
+      Creates the instance of "TAP::Tree".
+
+      Specify the reference to the scalar variable which stored the outputs
+      of TAP as tap_ref of an arguments.
+
+      The arguments can be specified "tap_file" and "tap_tree" in addition
+      to "tap_ref".
+
+      "tap_file" is specified the path to file which stored the outputs of
+      TAP.
 
         my $taptree = TAP::Tree->new( tap_file => $path );
-        my $taptree = TAP::Tree->new( tap_tree => $parsed_ref );
 
-    parse
-    create_tap_tree_iterator
-    tap_tree
-    summary
+      "tap_tree" is specified the data of the tree structure which
+      "TAP::Tree" parsed.
+
+        my $taptree = TAP::Tree->new( tap_tree => $parsed_tap );
+
+      "utf8" is specified, when TAP is encoded by UTF-8.
+
+        my $taptree = TAP::Tree->new( tap_ref => $tap_ref, utf8 => 1 );
+
+    * parse
+
+        require TAP::Tree;
+        my $taptree = TAP::Tree->new( tap_ref => $tap_ref );
+        my $tree    = $taptree->parse;
+
+        say $tree->{plan}{number};
+        say $tree->{testline}[0]->{description};
+
+      Parses a output of TAP and returns the tree structure data. The return
+      value is a hash reference and all of the parsed result of TAP are
+      stored.
+
+      Please dump the detailed content of inclusion :)
+
+        {
+            version   => {},  # the version number of TAP (usually 12). 
+            plan      => {},  # the hash reference in which the numbers of tests.
+            testline  => [],  # the array reference in which the result of each tests.
+            bailout   => {},  # the hash reference in which an informational about Bailout.
+        }
+
+    * create_tap_tree_iterator
+
+      "TAP::Tree" makes becomes the complicated structure where a hierarchy
+      is deep, when there is a subtest.
+
+      Therefore, the iterator which can follow a tree strucutre data easily
+      is prepared for "TAP::Tree".
+
+        my $taptree = TAP::Tree->new( tap_ref => $tap_ref );
+        $taptree->parse;
+        my $iterator = $taptree->create_tap_tree_iterator( subtest => 1);
+
+        my $test = $iterator->next;
+        say $test->{testline}{description};
+
+      Specify arguments "subtest", when following subtest.
 
 ISSUE REPORT
     <https://github.com/magnolia-k/p5-TAP-Tree/issues>
