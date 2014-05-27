@@ -22,23 +22,23 @@
    "prereqs" : {
       "build" : {
          "requires" : {
-            "ExtUtils::MakeMaker" : "6.66"
+            "ExtUtils::MakeMaker" : "6.98"
          }
       },
       "configure" : {
          "requires" : {
-            "ExtUtils::MakeMaker" : "6.66"
+            "ExtUtils::MakeMaker" : "6.98"
          }
       },
       "runtime" : {
          "requires" : {
+            "Test::More" : "1.001002",
             "perl" : "5.010001"
          }
       },
       "test" : {
          "requires" : {
-            "Test::Exception" : "0",
-            "Test::More" : "0.98"
+            "Test::Exception" : "0"
          }
       }
    },

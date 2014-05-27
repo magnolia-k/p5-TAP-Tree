@@ -3,11 +3,10 @@ abstract: 'TAP (Test Anything Protocol) parser which supported the subtest'
 author:
   - 'magnolia <magnolia.k@me.com>'
 build_requires:
-  ExtUtils::MakeMaker: '6.66'
+  ExtUtils::MakeMaker: '6.98'
   Test::Exception: '0'
-  Test::More: '0.98'
 configure_requires:
-  ExtUtils::MakeMaker: '6.66'
+  ExtUtils::MakeMaker: '6.98'
 dynamic_config: 1
 generated_by: 'ExtUtils::MakeMaker version 6.98, CPAN::Meta::Converter version 2.140640'
 license: perl
@@ -20,6 +19,7 @@ no_index:
     - t
     - inc
 requires:
+  Test::More: '1.001002'
   perl: '5.010001'
 resources:
   bugtracker: https://github.com/magnolia-k/p5-TAP-Tree/issues

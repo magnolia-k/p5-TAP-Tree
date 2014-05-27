@@ -1,10 +1,11 @@
 Changes
-doc_ja/TAP-Tree.pod
-doc_ja/：ｗ
+cpanfile
 lib/TAP/Tree.pm
 lib/TAP/Tree/Iterator.pm
 Makefile.PL
 MANIFEST			This list of files
+META.json
+META.yml
 README
 t/00-load.t
 t/01-basic.t
