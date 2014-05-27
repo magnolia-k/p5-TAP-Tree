@@ -14,11 +14,11 @@ WriteMakefile(
     MIN_PERL_VERSION => 5.010001,
 
     CONFIGURE_REQUIRES => {
-        'ExtUtils::MakeMaker' => 6.66,
+        'ExtUtils::MakeMaker' => 6.98,
     },
 
     BUILD_REQUIRES => {
-        'ExtUtils::MakeMaker' => 6.66,
+        'ExtUtils::MakeMaker' => 6.98,
     },
 
     TEST_REQUIRES => {
