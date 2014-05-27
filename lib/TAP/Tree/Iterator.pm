@@ -3,6 +3,7 @@ package TAP::Tree::Iterator;
 use strict;
 use warnings;
 use v5.10.1;
+use utf8;
 
 use Carp;
 

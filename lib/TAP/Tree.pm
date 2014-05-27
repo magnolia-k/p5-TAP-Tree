@@ -3,6 +3,7 @@ package TAP::Tree;
 use strict;
 use warnings;
 use v5.10.1;
+use utf8;
 
 our $VERSION = 'v0.0.1';
 
