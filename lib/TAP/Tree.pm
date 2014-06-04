@@ -59,6 +59,7 @@ sub summary {
         version     => $self->{result}{version},
         bailout     => $self->{result}{bailout},
         plan        => $self->{result}{plan},
+        tests       => scalar @{ $self->{result}{testline} },
         fail        => $fail,
     };
 
