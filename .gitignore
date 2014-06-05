@@ -6,3 +6,4 @@ cover_db*
 TAP-Tree-*
 *.swp
 *.tmp
+*.old
