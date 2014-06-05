@@ -487,6 +487,18 @@ Please dump the detailed content of inclusion :)
       bailout   => {},  # the hash reference in which an informational about Bailout.
   }
 
+=item * summary
+
+Returns the summary of the TAP output.
+
+The contents of a summary is below.
+
+  version -> the version number of TAP (usually 12).
+  bailout -> the hash reference in which an informational about Bailout.
+  plan    -> the hash reference in which the number of the planned tests.
+  tests   -> the number of the ran tests.
+  fail    -> the number of the failed tests.
+
 =item * create_tap_tree_iterator
 
 C<TAP::Tree> makes becomes the complicated structure where a hierarchy is deep, when there is a subtest. 
