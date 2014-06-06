@@ -5,7 +5,7 @@ use warnings;
 use v5.10.1;
 use utf8;
 
-our $VERSION = 'v0.0.2';
+our $VERSION = 'v0.0.3';
 
 use Carp;
 use autodie;
