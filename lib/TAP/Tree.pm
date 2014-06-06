@@ -50,17 +50,40 @@ sub summary {
 
     $self->_check_for_parsed;
 
-    my $fail = 0;
+    my $failed_tests = 0;
     for my $testline ( @{ $self->{result}{testline} } ) {
-        $fail++ if ( $testline->{result} == 0 && ! $testline->{todo} );
+        $failed_tests++ if ( $testline->{result} == 0 && ! $testline->{todo} );
     }
 
+    my $is_bailout    = $self->{result}{bailout} ? 1 : 0;
+    my $ran_tests     = scalar @{ $self->{result}{testline} };
+    my $is_good_plan  = ( defined $self->{result}{plan}{number} ) ? 1 : 0;
+
+    my $is_ran_all_tests = ( $is_good_plan and $ran_tests != 0 and $self->{result}{plan}{number} == $ran_tests ) ? 1 : 0;
+
     my $summary = {
-        version     => $self->{result}{version},
+        version         => $self->{result}{version},
+
+        is_skipped_all  => defined $self->{result}{plan}{skip_all} ? 1 : 0,
+        skip_all_msg    => $self->{result}{plan}{skip_all} ?
+            $self->{result}{plan}{directive} : undef,
+
+        is_bailout      => defined $self->{result}{bailout} ? 1 : 0,
+        bailout_msg     => $self->{result}{bailout} ?
+            $self->{result}{bailout}{message} : undef,
+
+        planned_tests   => $self->{result}{plan}{number},
+        ran_tests       => $ran_tests,
+        failed_tests    => $failed_tests,
+
+        is_good_plan    => $is_good_plan,
+        is_ran_all_tests => $is_ran_all_tests,
+
+        # for backward compatibility
         bailout     => $self->{result}{bailout},
         plan        => $self->{result}{plan},
         tests       => scalar @{ $self->{result}{testline} },
-        fail        => $fail,
+        fail        => $failed_tests,
     };
 
     return $summary;
@@ -415,8 +438,9 @@ Parses a TAP output.
 Summarises the parsed TAP output
 
   my $summary = $taptree->summary;
-  say $summary->{plan}{number}; # -> print 2
-  say $summary->{fail};         # -> print 1 ... number of fail tests.
+  say $summary->{planned_tests}; # -> print 2
+  say $summary->{ran_tests};     # -> print 2
+  say $summary->{failed_tests};  # -> print 1 ... number of failed tests.
                                 # 'TODO' tests are counted as 'ok', not 'not ok'
 
 Iterates the parsed TAP
@@ -489,15 +513,20 @@ Please dump the detailed content of inclusion :)
 
 =item * summary
 
-Returns the summary of the TAP output.
+Returns the summary  of the TAP output.
 
-The contents of a summary is below.
+The contents of a summary is below ( hash reference ).
 
-  version -> the version number of TAP (usually 12).
-  bailout -> the hash reference in which an informational about Bailout.
-  plan    -> the hash reference in which the number of the planned tests.
-  tests   -> the number of the ran tests.
-  fail    -> the number of the failed tests.
+  version          -> the version number of TAP (usually 12).
+  is_skipped_all   -> the flag that shows whether all the tests were skipped.
+  skip_all_msg     -> the message that shows the reason of skip tests.
+  is_bailout       -> the flag that shows whether bailout the tests.
+  bailout_msg      -> the message that shows the reason of bailout.
+  planned_tests    -> the number of the planned tests.
+  ran_tests        -> the number of the ran tests.
+  failed_tests     -> the number of the failed tests.
+  is_good_plan     -> the flag that shows whether the number of plan is set.
+  is_ran_all_tests -> the flag that shows whether the all tests are ran.
 
 =item * create_tap_tree_iterator
 

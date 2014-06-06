@@ -23,10 +23,17 @@ my $taptree = TAP::Tree->new( tap_ref => \$tap );
 my $tree    = $taptree->parse;
 
 subtest 'summary' => sub {
-    plan tests => 4;
+    plan tests => 9;
 
     my $summary = $taptree->summary;
 
+    is( $summary->{planned_tests},  3, 'planned tests' );
+    is( $summary->{ran_tests},      3, 'ran tests' );
+    is( $summary->{failed_tests},   0, 'failed tests' );
+    is( $summary->{is_skipped_all}, 0, 'is skipped all' );
+    is( $summary->{is_bailout},     0, 'is bailout' );
+
+    # old members
     is( $summary->{plan}{number}, 3, 'summary - planned tests' );
     is( $summary->{tests}, 3,        'summary - ran tests'     );
     is( $summary->{fail}, 0,         'summary - fail number'   );
