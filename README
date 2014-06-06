@@ -28,8 +28,9 @@ SYNOPSIS
     Summarises the parsed TAP output
 
       my $summary = $taptree->summary;
-      say $summary->{plan}{number}; # -> print 2
-      say $summary->{fail};         # -> print 1 ... number of fail tests.
+      say $summary->{planned_tests}; # -> print 2
+      say $summary->{ran_tests};     # -> print 2
+      say $summary->{failed_tests};  # -> print 1 ... number of failed tests.
                                     # 'TODO' tests are counted as 'ok', not 'not ok'
 
     Iterates the parsed TAP
@@ -102,6 +103,23 @@ METHODS
             testline  => [],  # the array reference in which the result of each tests.
             bailout   => {},  # the hash reference in which an informational about Bailout.
         }
+
+    * summary
+
+      Returns the summary of the TAP output.
+
+      The contents of a summary is below ( hash reference ).
+
+        version          -> the version number of TAP (usually 12).
+        is_skipped_all   -> the flag that shows whether all the tests were skipped.
+        skip_all_msg     -> the message that shows the reason of skip tests.
+        is_bailout       -> the flag that shows whether bailout the tests.
+        bailout_msg      -> the message that shows the reason of bailout.
+        planned_tests    -> the number of the planned tests.
+        ran_tests        -> the number of the ran tests.
+        failed_tests     -> the number of the failed tests.
+        is_good_plan     -> the flag that shows whether the number of plan is set.
+        is_ran_all_tests -> the flag that shows whether the all tests are ran.
 
     * create_tap_tree_iterator
 
