@@ -4,7 +4,7 @@
       "magnolia <magnolia.k@me.com>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "ExtUtils::MakeMaker version 6.98, CPAN::Meta::Converter version 2.140640",
+   "generated_by" : "ExtUtils::MakeMaker version 6.9902, CPAN::Meta::Converter version 2.140640",
    "license" : [
       "perl_5"
    ],
@@ -54,5 +54,5 @@
          "web" : "https://github.com/magnolia-k/p5-TAP-Tree"
       }
    },
-   "version" : "v0.0.3"
+   "version" : "v0.0.4"
 }

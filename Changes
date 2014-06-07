@@ -1,5 +1,12 @@
 Revision history for perl module TAP::Tree.
 
+v0.0.4 2014-06-07
+
+ - When plan is not able to be acquired,
+   only the key of a hash corrects so that it may set up.
+ - Updated README
+
+
 v0.0.3 2014-06-06
 
  - Changed the format of the summary.
