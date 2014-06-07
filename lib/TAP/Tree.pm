@@ -272,6 +272,10 @@ sub _parse {
         $result->{version}{number} = 12;    # Default tap version is '12'.
     }
 
+    if ( ! $result->{plan} ) {
+        $result->{plan}{number} = undef;
+    }
+
     return $result;
 }
 
