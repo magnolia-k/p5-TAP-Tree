@@ -6,10 +6,14 @@ use Test::More tests => 3;
 ok( 1, 'first test' );
 
 subtest 'second test' => sub {
+    plan tests => 3;
+
     ok( 1, 'first sub test' );
 
     subtest 'second sub test' => sub {
         ok( 1, 'sub sub test' );
+
+        done_testing();
     };
 
     ok( 1, 'third sub test' );
