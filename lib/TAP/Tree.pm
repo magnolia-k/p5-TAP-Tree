@@ -261,7 +261,7 @@ sub _parse {
     }
 
     if ( ! $result->{version} ) {
-        $result->{version}{number} = 12;    # Default tap version is '12'.
+        $result->{version}{number} = 12;    # Default tap version is '12' now.
     }
 
     if ( ! $result->{plan} ) {
