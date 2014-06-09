@@ -346,55 +346,43 @@ sub _parse_subtest {
     return unless $subtest_ref;
     return unless @{ $subtest_ref };
 
-    my $str = shift @{ $subtest_ref };
-
-    my ( $indent, $line );
-    {
-        $str =~ /^(\s+)(.*)/;
-        $indent  = length( $1 );
-        $line    = $2;
-    }
-
     my $subtest_result = {
         plan        => undef,
         testline    => [],
         subtest     => undef,
     };
 
-    $self->_parse_subtest_line( $line, $subtest_result );
-
     my @subtest_more;
+    my $indent;
     while( @{ $subtest_ref } ) {
         my $subtest_line = shift @{ $subtest_ref };
 
-        my ( $sub_indent, $sub_line );
+        my ( $indent_current, $line );
         {
-            $subtest_line =~ /^(\s+)(.*)/;
-            $sub_indent = length( $1 );
-            $sub_line   = $2;
+            $subtest_line   =~ /^(\s+)(.*)/;
+            $indent_current = length( $1 );
+            $line           = $2;
+
+            $indent         = $indent_current unless $indent;
         }
 
-        if ( $sub_indent > $indent ) {
+        if ( $indent_current > $indent ) {
             unshift @subtest_more, $subtest_line;
             next;
         }
 
-        $self->_parse_subtest_line( $sub_line, $subtest_result, \@subtest_more );
+        # parse
+        if ( $line =~ /^1\.\.\d+/ ) {
+            $subtest_result->{plan} = $self->_parse_plan( $line );
+        } elsif ( $line =~ /^(not )?ok/ ) {
+            my $subtest = $self->_parse_subtest( \@subtest_more );
+            push @{ $subtest_result->{testline} },
+                 $self->_parse_testline( $line, $subtest );
+        }
+
     }
 
     return $subtest_result;
-}
-
-sub _parse_subtest_line {
-    my ( $self, $line, $subtest_result, $subtest_more_ref ) = @_;
-
-    if ( $line =~ /^1\.\.\d+/ ) {
-        $subtest_result->{plan} = $self->_parse_plan( $line );
-    } elsif ( $line =~ /^(not )?ok/ ) {
-        my $subtest = $self->_parse_subtest( $subtest_more_ref );
-        push @{ $subtest_result->{testline} },
-             $self->_parse_testline( $line, $subtest );
-    }
 }
 
 1;
