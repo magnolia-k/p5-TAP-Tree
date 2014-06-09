@@ -220,19 +220,11 @@ sub _parse {
         }
 
         # tap version
-        if ( $line =~ /^TAP version (\d+)$/ ) {
 
-            if ( $result->{version}{number} ) {
-                croak "Invalid TAP sequence. TAP version is already specified.";
-            }
-
-            $result->{version} = {
-                str     => $line,
-                number  => $1,
-            };
-
-            next;
-        }
+        # Deleted the parsing code for the version of tha TAP.
+        # Since a specified of a version is unnecessary
+        # for the version lower than 12
+        # It is due to add when supporting version 13.
 
         # plan
         if ( $line =~ /^(\s*)1\.\.\d+(\s#.*)?$/ ) {
