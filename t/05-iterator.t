@@ -37,8 +37,8 @@ subtest 'subtest' => sub {
 1..3
 ok 1 - first test
     ok 1 - first sub test
-        ok 1 - sub sub test
         1..1
+        ok 1 - sub sub test
     ok 2 - second sub test
     1..2
 ok 2 - second test
