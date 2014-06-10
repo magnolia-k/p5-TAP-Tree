@@ -2,6 +2,10 @@ Revision history for perl module TAP::Tree.
 
 v0.0.5 2014-06-09
 
+ - Improved parsing subtests.
+
+   There was a patterns of the subtest which cannot be parsed correctly.
+
  - Deleted the parsing code for the version of tha TAP.
 
    Since a specified of a version is unnecessary for the version lower than 12.
