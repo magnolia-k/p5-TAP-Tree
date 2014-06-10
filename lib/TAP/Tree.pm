@@ -352,8 +352,13 @@ sub _parse_subtest {
         subtest     => undef,
     };
 
-    my @subtest_more;
     my $indent;
+    {
+        $subtest_ref->[-1] =~ /^(\s+).*/;
+        $indent = length( $1 );
+    }
+
+    my @subtest_more;
     while( @{ $subtest_ref } ) {
         my $subtest_line = shift @{ $subtest_ref };
 
@@ -362,24 +367,26 @@ sub _parse_subtest {
             $subtest_line   =~ /^(\s+)(.*)/;
             $indent_current = length( $1 );
             $line           = $2;
-
-            $indent         = $indent_current unless $indent;
         }
 
         if ( $indent_current > $indent ) {
-            unshift @subtest_more, $subtest_line;
+            push @subtest_more, $subtest_line;
             next;
         }
 
-        # parse
+        # parse plan
         if ( $line =~ /^1\.\.\d+/ ) {
             $subtest_result->{plan} = $self->_parse_plan( $line );
-        } elsif ( $line =~ /^(not )?ok/ ) {
+            next;
+        }
+
+        # parse testline
+        if ( $line =~ /^(not )?ok/ ) {
             my $subtest = $self->_parse_subtest( \@subtest_more );
             push @{ $subtest_result->{testline} },
                  $self->_parse_testline( $line, $subtest );
+            next;
         }
-
     }
 
     return $subtest_result;

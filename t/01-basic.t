@@ -12,6 +12,9 @@ ok 1 - first test
         ok 1 - sub sub test
         1..1
     ok 2 - second sub test
+        # Subtets: third sub test
+        1..1
+        ok 1 - sub sub sub test
     ok 3 - third sub test
     1..3
 ok 2 - second test
@@ -41,18 +44,19 @@ subtest 'summary' => sub {
 };
 
 subtest 'tree' => sub {
-    plan tests => 2;
+    plan tests => 3;
 
     is( $tree->{testline}[0]{description}, 'first test', 'test description' );
-    is( $tree->{testline}[1]{subtest}{testline}[1]{subtest}{testline}[0]{description}, 'sub sub test', 'subtest description' );
+    is( $tree->{testline}[1]{subtest}{testline}[1]{subtest}{testline}[0]{description}, 'sub sub test', 'sub sub test description' );
+    is( $tree->{testline}[1]{subtest}{testline}[2]{subtest}{testline}[0]{description}, 'sub sub sub test', 'sub sub sub test description' );
 };
 
 subtest 'iterator' => sub {
-    plan tests => 7;
+    plan tests => 8;
     
     my $iterator = $taptree->create_tap_tree_iterator( subtest => 1 );
 
-    my @descriptions = ( 'first test', 'second test', 'first sub test', 'second sub test', 'sub sub test', 'third sub test', 'third test' );
+    my @descriptions = ( 'first test', 'second test', 'first sub test', 'second sub test', 'sub sub test', 'third sub test', 'sub sub sub test', 'third test' );
 
     for my $description ( @descriptions ) {
         my $result = $iterator->next;
