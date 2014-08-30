@@ -78,12 +78,6 @@ sub summary {
 
         is_good_plan    => $is_good_plan,
         is_ran_all_tests => $is_ran_all_tests,
-
-        # for backward compatibility
-        bailout     => $self->{result}{bailout},
-        plan        => $self->{result}{plan},
-        tests       => scalar @{ $self->{result}{testline} },
-        fail        => $failed_tests,
     };
 
     return $summary;
