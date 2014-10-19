@@ -122,7 +122,7 @@ sub _validate {
         }
 
         if ( ! -e -f -r -T $self->{tap_file} ) {
-            croak "Paramter 'tap_file' is invalid:$self->{tap_file}";
+            croak "Parameter 'tap_file' is invalid:$self->{tap_file}";
         }
 
         return $self;
