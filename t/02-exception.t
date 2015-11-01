@@ -1,9 +1,11 @@
 use strict;
 use warnings;
 
-use Test::More tests => 1;
-use Test::Exception;
+use Test::Stream -V1;
+use Test::Stream::Plugin::Exception;
 
 require TAP::Tree;
 
-throws_ok { TAP::Tree->new } qr[No required parameter], 'no paramter';
+plan(1);
+
+like( dies { TAP::Tree->new }, qr/No required parameter/ );

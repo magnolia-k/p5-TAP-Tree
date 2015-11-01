@@ -1,7 +1,10 @@
 use strict;
 use warnings;
 
-use Test::More tests => 3;
+use Test::Stream -V1;
+use Test::Stream::Plugin::Subtest;
+
+plan(3);
 
 my $tap = <<'END';
 1..3
@@ -26,7 +29,7 @@ my $taptree = TAP::Tree->new( tap_ref => \$tap );
 my $tree    = $taptree->parse;
 
 subtest 'summary' => sub {
-    plan tests => 5;
+    plan 5;
 
     my $summary = $taptree->summary;
 
@@ -38,7 +41,7 @@ subtest 'summary' => sub {
 };
 
 subtest 'tree' => sub {
-    plan tests => 3;
+    plan 3;
 
     is( $tree->{testline}[0]{description}, 'first test', 'test description' );
     is( $tree->{testline}[1]{subtest}{testline}[1]{subtest}{testline}[0]{description}, 'sub sub test', 'sub sub test description' );
@@ -46,7 +49,7 @@ subtest 'tree' => sub {
 };
 
 subtest 'iterator' => sub {
-    plan tests => 8;
+    plan 8;
     
     my $iterator = $taptree->create_tap_tree_iterator( subtest => 1 );
 

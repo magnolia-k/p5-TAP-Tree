@@ -1,7 +1,9 @@
 use strict;
 use warnings;
 
-use Test::More tests => 4;
+use Test::Stream("-V1", "Subtest");
+
+plan(4);
 
 require TAP::Tree;
 
@@ -17,7 +19,7 @@ END
     $taptree->parse;
     my $summary = $taptree->summary;
 
-    plan tests => 7;
+    plan 7;
 
     is( $summary->{is_skipped_all}, 0, 'is skipped all' );
     is( $summary->{is_bailout},     0, 'is bail out' );
@@ -41,7 +43,7 @@ END
     $taptree->parse;
     my $summary = $taptree->summary;
 
-    plan tests => 7;
+    plan 7;
 
     is( $summary->{is_skipped_all}, 0, 'is skipped all' );
     is( $summary->{is_bailout},     0, 'is bail out' );
@@ -65,7 +67,7 @@ END
     $taptree->parse;
     my $summary = $taptree->summary;
 
-    plan tests => 8;
+    plan 8;
 
     is( $summary->{is_skipped_all}, 0, 'is skipped all' );
     is( $summary->{is_bailout},     1, 'is bail out' );
@@ -90,7 +92,7 @@ END
     $taptree->parse;
     my $summary = $taptree->summary;
 
-    plan tests => 7;
+    plan 7;
 
     is( $summary->{is_skipped_all}, 0, 'is skipped all' );
     is( $summary->{is_bailout},     0, 'is bail out' );

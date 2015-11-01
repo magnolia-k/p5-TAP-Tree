@@ -3,11 +3,12 @@ use warnings;
 
 use Data::Dumper;
 
-use Test::More tests => 4;
+use Test::Stream("-V1", "Subtest");
 
-require_ok( 'TAP::Tree::Iterator' );
-
+require TAP::Tree::Iterator;
 require TAP::Tree;
+
+plan(3);
 
 subtest 'no subtest' => sub {
     my $tap = <<'END';
@@ -64,7 +65,7 @@ END
             { desc => undef                              },
         ];
 
-    plan tests => ( scalar @{ $tests } ) * 2 - 1;
+    plan (( scalar @{ $tests } ) * 2 - 1);
 
     for my $test ( @{ $tests } ) {
         if ( ! defined $test->{desc} ) {
@@ -108,7 +109,7 @@ END
             { desc => undef                         },
         ];
 
-    plan tests => ( scalar @{ $tests } ) * 2 - 1;
+    plan (( scalar @{ $tests } ) * 2 - 1);
 
     for my $test ( @{ $tests } ) {
         if ( ! defined $test->{desc} ) {

@@ -1,15 +1,14 @@
-use strict;
-use warnings;
-
 use v5.10.1;
+
+use Test::Stream( "-V1", "Subtest" );
 
 use Carp;
 use FindBin qw[$Bin];
 use File::Spec;
 
-use Test::More tests => 16;
+require TAP::Tree;
 
-require_ok( 'TAP::Tree' );
+plan(15);
 
 subtest '01-success.test' => sub {
     my $tree = execute_test_script( '01-success.test' );
@@ -17,7 +16,7 @@ subtest '01-success.test' => sub {
     my $plan      = $tree->{plan};
     my $testlines = $tree->{testline};
 
-    plan tests => 6;
+    plan 6;
 
     is( $plan->{number}, 2, 'number' );
     is( $testlines->[0]->{result}, 1, 'result - first test' );
@@ -35,7 +34,7 @@ subtest '02-failure.test' => sub {
     my $plan      = $tree->{plan};
     my $testlines = $tree->{testline};
 
-    plan tests => 3;
+    plan 3;
 
     is( $plan->{number}, 2, 'number' );
 
@@ -48,14 +47,14 @@ subtest '03-skip.test' => sub {
     my $plan      = $tree->{plan};
     my $testlines = $tree->{testline};
 
-    plan tests => 5;
+    plan 5;
 
     is( $plan->{number}, 3, 'number' );
 
     is( $testlines->[0]->{result}, 1,     'result - first test' );
     is( $testlines->[0]->{skip}, undef,   'is skipped? - first test' );
     is( $testlines->[1]->{result}, 1,     'result - second test' );
-    isnt( $testlines->[1]->{skip}, undef, 'is skipped? - second test' );
+    ok( $testlines->[1]->{skip}, 'is skipped? - second test' );
 };
 
 subtest '04-todo.test' => sub {
@@ -64,14 +63,14 @@ subtest '04-todo.test' => sub {
     my $plan      = $tree->{plan};
     my $testlines = $tree->{testline};
 
-    plan tests => 5;
+    plan 5;
 
     is( $plan->{number}, 3, 'number' );
 
     is( $testlines->[0]->{result}, 1,   'result - first test' );
     is( $testlines->[0]->{todo}, undef, 'is todo? - first test' );
     is( $testlines->[1]->{result}, 0,   'result - second test' );
-    isnt( $testlines->[1]->{todo},      'is todo? - second test' );
+    ok( $testlines->[1]->{todo},      'is todo? - second test' );
 };
 
 subtest '05-bailout.test' => sub {
@@ -82,7 +81,7 @@ subtest '05-bailout.test' => sub {
 
     my $bailout   = $tree->{bailout};
 
-    plan tests => 4;
+    plan 4;
 
     is( $plan->{number}, 2, 'number' );
 
@@ -101,7 +100,7 @@ subtest '06-die.test' => sub {
 
     my $bailout   = $tree->{bailout};
 
-    plan tests => 4;
+    plan 4;
 
     is( $plan->{number}, 2, 'number' );
 
@@ -116,7 +115,7 @@ subtest '07-donetesting.test' => sub {
 
     my $plan      = $tree->{plan};
 
-    plan tests => 1;
+    plan 1;
 
     is( $plan->{number}, 2, 'number' );
 };
@@ -127,7 +126,7 @@ subtest '08-subtest.test' => sub {
     my $plan      = $tree->{plan};
     my $testlines = $tree->{testline};
 
-    plan tests => 5;
+    plan 5;
 
     is( $plan->{number}, 3, 'number' );
     is( @{ $testlines }, 3, 'number of taps' );
@@ -144,7 +143,7 @@ subtest '09-unmatch.test' => sub {
     my $plan      = $tree->{plan};
     my $testlines = $tree->{testline};
 
-    plan tests => 2;
+    plan 2;
 
     is( $plan->{number}, 3, 'number' );
     is( @{ $testlines }, 2, 'number of taps' );
@@ -156,7 +155,7 @@ subtest '10-todo_skip.test' => sub {
     my $plan      = $tree->{plan};
     my $testlines = $tree->{testline};
 
-    plan tests => 3;
+    plan 3;
 
     is( $testlines->[1]->{result}, 0, 'result - second test' );
     ok( $testlines->[1]->{todo}, 'is todo? - second test' );
@@ -169,7 +168,7 @@ subtest '11-fail_subtest.test' => sub {
     my $plan      = $tree->{plan};
     my $testlines = $tree->{testline};
 
-    plan tests => 6;
+    plan 6;
 
     is( $plan->{number}, 3, 'number' );
     is( $testlines->[0]->{result}, 1, 'result - first test' );
@@ -189,7 +188,7 @@ subtest '12-todo_subtest.test' => sub {
     my $plan      = $tree->{plan};
     my $testlines = $tree->{testline};
 
-    plan tests => 5;
+    plan 5;
 
     is( $plan->{number}, 2, 'number' );
     is( $testlines->[0]->{result}, 1, 'result - first test' );
@@ -206,7 +205,7 @@ subtest '13-bailout_subtest_donetesting.test' => sub {
     my $testlines = $tree->{testline};
     my $bailout   = $tree->{bailout};
 
-    plan tests => 3;
+    plan 3;
 
     is( $plan->{number}, undef, 'number' );
     is( $testlines->[0]->{result}, 1, 'result - first test' );
@@ -219,7 +218,7 @@ subtest '14-skipall.test' => sub {
     my $plan      = $tree->{plan};
     my $testlines = $tree->{testline};
 
-    plan tests => 3;
+    plan 3;
 
     is( $plan->{number}, 0, 'number' );
     is( $plan->{skip_all}, 1, 'skip' );
@@ -232,7 +231,7 @@ subtest '15-skipall_aftertest.test' => sub {
     my $plan      = $tree->{plan};
     my $testlines = $tree->{testline};
 
-    plan tests => 2;
+    plan 2;
 
     is( $plan->{number}, 0, 'number' );
     is( $testlines->[0]->{result}, 1, 'result - first test' );
