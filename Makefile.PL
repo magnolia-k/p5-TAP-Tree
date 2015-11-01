@@ -22,7 +22,7 @@ WriteMakefile(
     },
 
     TEST_REQUIRES => {
-        'Test::Exception' => 0,
+        'Test::Stream' => 0,
     },
 
     PREREQ_PM => {
